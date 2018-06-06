@@ -22,7 +22,7 @@ function varargout = GUI1(varargin)
 
 % Edit the above text to modify the response to help GUI1
 
-% Last Modified by GUIDE v2.5 05-Jun-2018 23:49:50
+% Last Modified by GUIDE v2.5 06-Jun-2018 22:41:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,8 +69,21 @@ handles.sel_data = sel
 guidata(hObject,handles)
 
 
+
+
 function func1(handles)
-    clear all
+    global a b
+%     x = get(handles.diyigeshu,'String');
+%     y = get(handles.diergeshu,'String');
+%     a = str2double(x);
+%    
+%     b = str2double(y);
+%     c = a+b
+%     d = num2str(c);
+% %     set(handles.jieguo,'String',d);
+%     guidata(hObject.handles);
+%  a = str2double(get(handles.diyigeshu,'String'));
+% b =str2double(get(handles.diergeshu,'String'));
 A = createpde('thermal','steadystate');
 % point1 = [3 4 -.075 .075 .075 -.075  -.1125 -.1125 .1125 .1125];
 % point2 = [3 4 -.075 -.0075 -.0075 -.075  -.0975 -.0975 .0975 .0975];
@@ -96,7 +109,7 @@ thermalBC(A,'Edge',9,'HeatFlux',-21.09);
 thermalBC(A,'Edge',10,'HeatFlux',-21.09);
 thermalBC(A,'Edge',11,'HeatFlux',-2.22);
 thermalBC(A,'Edge',12,'HeatFlux',-2.22);
-thermalBC(A,'Edge',1,'Temperature',400);
+thermalBC(A,'Edge',1,'Temperature',a);
  
 thermalProperties(A,'ThermalConductivity',51.5);
  
@@ -136,12 +149,12 @@ thermalBC(B,'Edge',9,'HeatFlux',-21.09);
 thermalBC(B,'Edge',10,'HeatFlux',-21.09);
 thermalBC(B,'Edge',11,'HeatFlux',-2.22);
 thermalBC(B,'Edge',12,'HeatFlux',-2.22);
-thermalBC(B,'Edge',1,'Temperature',400);
+thermalBC(B,'Edge',1,'Temperature',a);
  
 msh = generateMesh(B,'Hmax',0.2);
  
 tlist = 0:.1:100;
-thermalIC(B,26);
+thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
  
@@ -203,19 +216,20 @@ ylabel 'Temperature C'
 % ylabel 'Temperature, degrees-Celsius'
 %  
  
- 
-%for animation
-close all
-F(length(tlist)) = struct('cdata',[],'colormap',[]);
-for tt=1:length(tlist)
-pdeplot(A,'XYData',T(:,tt),'Contour','on','ColorMap','jet');
-drawnow;
-F(tt) = getframe;
-
-end
+%  
+% %for animation
+% close all
+% F(length(tlist)) = struct('cdata',[],'colormap',[]);
+% for tt=1:length(tlist)
+% pdeplot(A,'XYData',T(:,tt),'Contour','on','ColorMap','jet');
+% drawnow;
+% F(tt) = getframe;
+% 
+% end
 
 
 function func2(handles)
+global a b
 A = createpde('thermal');
 g = decsg([3 4 -1.5 1.5 1.5 -1.5 0 0 .2 .2]');
 geometryFromEdges(A,g);
@@ -262,12 +276,12 @@ thermalProperties('SpecificHeat',FCAPA ,B,'ThermalConductivity',FCON,'MassDensit
 internalHeatSource(B,FSUPP);
 
 thermalBC(B,'Edge',2,'Temperature',100);
-thermalBC(B,'Edge',3,'ConvectionCoefficient',coff,'AmbientTemperature',26);
+thermalBC(B,'Edge',3,'ConvectionCoefficient',coff,'AmbientTemperature',b);
 thermalBC(B,'Edge',4,'HeatFlux',leftHF);
 
 tfinal = 20000;
 tlist = 0:100:tfinal;
-thermalIC(B,26);
+thermalIC(B,b);
 B.SolverOptions.ReportStatistics = 'on';
 
 result = solve(B,tlist);
@@ -295,7 +309,7 @@ legend('Center Axis','Outer Surface','Location','SouthEast');
 
 
 function func3(handles);
-
+global a b
 A = createpde('thermal','steadystate');
 g = decsg([3 4 -0.5 0.5 0.5 -0.5 -4.5 -4.5 4.5 4.5]');
 geometryFromEdges(A,g);
@@ -314,7 +328,7 @@ thermalBC(A,'Edge',4,'HeatFlux',-33.3);
 % thermalBC(A,'Edge',10,'HeatFlux',-21.09);
 % thermalBC(A,'Edge',11,'HeatFlux',-2.22);
 % thermalBC(A,'Edge',12,'HeatFlux',-2.22);
-thermalBC(A,'Edge',1,'Temperature',400);
+thermalBC(A,'Edge',1,'Temperature',a);
  
 thermalProperties(A,'ThermalConductivity',51.5);
  
@@ -342,12 +356,12 @@ thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',51.5,'SpecificHeat
  
  
 thermalBC(B,'Edge',2,'HeatFlux',-10);
-thermalBC(B,'Edge',1,'Temperature',400);
+thermalBC(B,'Edge',1,'Temperature',a);
  
 msh = generateMesh(B,'Hmax',0.2);
  
 tlist = 0:.1:10;
-thermalIC(B,26);
+thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
  
@@ -366,7 +380,7 @@ getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
  
 
 function func4(handles)
-
+global a b
 A = createpde('thermal','steadystate');
 point2 = [2 3 -8 0 8 1 9 1];
 point1 = [2 3 -10 0 10 0 10 0];
@@ -379,7 +393,7 @@ figure;
 
 
 thermalBC(A,'Edge',2,'HeatFlux',-10);
-thermalBC(A,'Edge',1,'Temperature',400);
+thermalBC(A,'Edge',1,'Temperature',a);
 
 thermalProperties(A,'ThermalConductivity',51.5);
 
@@ -413,7 +427,7 @@ thermalBC(B,'Edge',1,'Temperature',@transientBCHeatedBlock);
 msh = generateMesh(B,'Hmax',0.2);
 
 tlist = 0:.1:10;
-thermalIC(B,26);
+thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
 
@@ -456,7 +470,7 @@ title 'Temperature, Steady State Solution'
 thermalProperties(B,'ThermalConductivity',k,'MassDensity',7800,'SpecificHeat',482.5);
  
 
-thermalIC(B,26);
+thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
 
@@ -632,7 +646,7 @@ varargout{1} = handles.output;
 %                              
 %                                 
 %  
-% thermalBC(B,'Edge',2,'AmbientTemperature', 26); 
+% thermalBC(B,'Edge',2,'AmbientTemperature', b); 
 % thermalBC(B,'Edge',2,'HeatFlux',-22.2);
 % thermalBC(B,'Edge',3,'HeatFlux',-33.3);
 % thermalBC(B,'Edge',4,'HeatFlux',-33.3);
@@ -649,7 +663,7 @@ varargout{1} = handles.output;
 % msh = generateMesh(B,'Hmax',0.2);
 %  
 % tlist = 0:.1:10;
-% thermalIC(B,26);
+% thermalIC(B,b);
 % R = solve(B,tlist);
 % T = R.Temperature;
 %  
@@ -897,7 +911,7 @@ varargout{1} = handles.output;
 %  
 % thermalProperties(B,'ThermalConductivity',k,'MassDensity',1,'SpecificHeat',1);
 %  
-% thermalIC(B,26);
+% thermalIC(B,b);
 % R = solve(B,tlist);
 % T = R.Temperature;
 %  
@@ -1066,3 +1080,74 @@ varargout{1} = handles.output;
 % varargout{1} = handles.output;
 % 
 % 
+
+
+
+function diyigeshu_Callback(hObject, eventdata, handles)
+% hObject    handle to diyigeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of diyigeshu as text
+%        str2double(get(hObject,'String')) returns contents of diyigeshu as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function diyigeshu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to diyigeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function diergeshu_Callback(hObject, eventdata, handles)
+% hObject    handle to diergeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of diergeshu as text
+%        str2double(get(hObject,'String')) returns contents of diergeshu as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function diergeshu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to diergeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton4.
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global a b
+x = get(handles.diyigeshu,'String');
+    y = get(handles.diergeshu,'String');
+    a = str2double(x);
+   
+    b = str2double(y);
+    c = a+b
+    d = num2str(c);
+    set(handles.jieguo,'String',d);
+    guidata(hObject.handles);
