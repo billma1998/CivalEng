@@ -22,7 +22,7 @@ function varargout = GUI1(varargin)
 
 % Edit the above text to modify the response to help GUI1
 
-% Last Modified by GUIDE v2.5 06-Jun-2018 22:41:07
+% Last Modified by GUIDE v2.5 07-Jun-2018 00:09:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,25 @@ switch s
     case 4
    func4
 end
+function diergeshu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to diergeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global a b
+X = get(handles.diyigeshu,'String');
+Y = get(handles.diergeshu,'String');
+a = str2num(X);
+b = str2num(Y);
 
 function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
@@ -237,7 +256,7 @@ geometryFromEdges(A,g);
 con = 51.5; 
 den = 7800; 
 capa = 482.5; 
-supp = 20000; 
+supp = 500*a; 
 FCON = @(region,state) con*region.y;
 FCAPA = @(region,state) capa*region.y;
 FSUPP = @(region,state) supp*region.y;
@@ -348,9 +367,12 @@ B = createpde('thermal','transient');
 g = decsg([3 4 -0.5 0.5 0.5 -0.5 -4.5 -4.5 4.5 4.5]');
 
 geometryFromEdges(B,g);
+% pdegplot(B,'EdgeLabels','on');
+% axis([-9 9 -9 9]);
+
+
  
- 
-thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',51.5,'SpecificHeat',483);
+thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',515,'SpecificHeat',483);
                              
                                 
  
@@ -358,9 +380,9 @@ thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',51.5,'SpecificHeat
 thermalBC(B,'Edge',2,'HeatFlux',-10);
 thermalBC(B,'Edge',1,'Temperature',a);
  
-msh = generateMesh(B,'Hmax',0.2);
+msh = generateMesh(B,'Hmax',0.02);
  
-tlist = 0:.1:10;
+tlist = 0:10000:500000;
 thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
@@ -369,18 +391,87 @@ T = R.Temperature;
 getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
  
 [~,nid] = getClosestNode( msh.Nodes, .5, 0 );
+h = figure;
+h.Position = [1 1 2 1].*h.Position;
+subplot(1,2,1); 
+axis equal  
+pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
+axis equal
+title 'Temperature, Final Time, Transient Solution'
+subplot(1,2,2); 
+axis equal
+plot(tlist, T(nid,:)); 
+grid on
+title 'Temperature at Right Edge as a Function of Time';
+xlabel 'Time, seconds'
+ylabel 'Temperature, degrees-Celsius'
+
  
  
 
  
 
+function diyigeshu_Callback(hObject, eventdata, handles)
+% hObject    handle to diyigeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of diyigeshu as text
+%        str2double(get(hObject,'String')) returns contents of diyigeshu as a double
 
+
+% --- Executes during object creation, after setting all properties.
+function diyigeshu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to diyigeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function diergeshu_Callback(hObject, eventdata, handles)
+% hObject    handle to diergeshu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of diergeshu as text
+%        str2double(get(hObject,'String')) returns contents of diergeshu as a double
+
+
+% --- Executes during object creation, after setting all properties.
+
+
+
+
+
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+answer = questdlg('close this windows?','MATLAB quest')
+if answer == 'Yes'
+    close
+end
 
  
  
 
 function func4(handles)
 global a b
+
 A = createpde('thermal','steadystate');
 point2 = [2 3 -8 0 8 1 9 1];
 point1 = [2 3 -10 0 10 0 10 0];
@@ -388,8 +479,6 @@ point1 = [2 3 -10 0 10 0 10 0];
 gdm = [point1; point2]';
 g = decsg(gdm,'R1-R2',['R1'; 'R2']');
 geometryFromEdges(A,g);
-
-figure;
 
 
 thermalBC(A,'Edge',2,'HeatFlux',-10);
@@ -406,27 +495,21 @@ figure
 pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet'); 
 axis equal
 title 'Temperature, Steady State Solution'
-
-
 B = createpde('thermal','transient');
 
-r1 = [2 3 -1 0 1 0 1 0];
-point2 = [2 3 -10 0 10 0 10 0];
-
-gdm = [r1; point2]';
-g = decsg(gdm,'R2-R1',['R1'; 'R2']');
+r1 = [2 3 -10 0 10 0 10 0];
+r2 = [2 3 -8 0 8 1 9 1];
+gdm = [r1; r2]';
+g = decsg(gdm,'R1-R2',['R1'; 'R2']');
 geometryFromEdges(B,g);
 
+thermalProperties(B,'ThermalConductivity',7800,'MassDensity',51.5,'SpecificHeat',483);
 
-thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',51.5,'SpecificHeat',483);
-                              
-                                
-thermalBC(B,'Edge',2,'HeatFlux',-10);
-thermalBC(B,'Edge',1,'Temperature',@transientBCHeatedBlock);
-
+thermalBC(B,'Edge',1,'HeatFlux',-10);
+% thermalBC(B,'Edge',6,'Temperature',@transientBCHeatedBlock);
+thermalBC(B,'Edge',1,'Temperature',a);
 msh = generateMesh(B,'Hmax',0.2);
-
-tlist = 0:.1:10;
+tlist = 0:10:2000;
 thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
@@ -440,7 +523,7 @@ getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
 h = figure;
 h.Position = [1 1 2 1].*h.Position;
 subplot(1,2,1); 
-axis equal
+axis equal  
 pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
 axis equal
 title 'Temperature, Final Time, Transient Solution'
@@ -451,44 +534,112 @@ grid on
 title 'Temperature at Right Edge as a Function of Time';
 xlabel 'Time, seconds'
 ylabel 'Temperature, degrees-Celsius'
+% A = createpde('thermal','steadystate');
+% point2 = [2 3 -8 0 8 1 9 1];
+% point1 = [2 3 -10 0 10 0 10 0];
+% 
+% gdm = [point1; point2]';
+% g = decsg(gdm,'R1-R2',['R1'; 'R2']');
+% geometryFromEdges(A,g);
+% 
+% 
+% thermalBC(A,'Edge',2,'HeatFlux',-10);
+% thermalBC(A,'Edge',1,'Temperature',a);
+% 
+% thermalProperties(A,'ThermalConductivity',51.5);
+% 
+% 
+% generateMesh(A,'Hmax',0.2);
+% 
+% R = solve(A);
+% T = R.Temperature;
+% figure
+% pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet'); 
+% axis equal
+% title 'Temperature, Steady State Solution'
+% 
+% 
+% B = createpde('thermal','transient');
+% 
+% point2 = [2 3 -8 0 8 1 9 1];
+% point1 = [2 3 -10 0 10 0 10 0];
+% 
+% gdm = [point1; point2]';
+% g = decsg(gdm,'R1-R2',['R1'; 'R2']');
+% geometryFromEdges(B,g);
+% 
+% 
+% thermalProperties(B,'MassDensity',7800, 'ThermalConductivity',51.5,'SpecificHeat',483);
+%                               
+%                                 
+% thermalBC(B,'Edge',2,'HeatFlux',-10);
+% thermalBC(B,'Edge',1,'Temperature',@transientBCHeatedBlock);
+% 
+% msh = generateMesh(B,'Hmax',0.2);
+% 
+% tlist = 0:.1:10;
+% thermalIC(B,0);
+% R = solve(B,tlist);
+% T = R.Temperature;
+% 
+% 
+% getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
+% 
+% [~,nid] = getClosestNode( msh.Nodes, .5, 0 );
+% 
+% 
+% h = figure;
+% h.Position = [1 1 2 1].*h.Position;
+% subplot(1,2,1); 
+% axis equal
+% pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
+% axis equal
+% title 'Temperature, Final Time, Transient Solution'
+% subplot(1,2,2); 
+% axis equal
+% plot(tlist, T(nid,:)); 
+% grid on
+% title 'Temperature at Right Edge as a Function of Time';
+% xlabel 'Time, seconds'
+% ylabel 'Temperature, degrees-Celsius'
 
 
 
-k = @(~,state) 0.3+0.003*state.u;
-
-thermalProperties(A,'ThermalConductivity',k);
- 
-
-R = solve(A);
-T = R.Temperature;
-figure
-pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet');  
-axis equal
-title 'Temperature, Steady State Solution'
-
-
-thermalProperties(B,'ThermalConductivity',k,'MassDensity',7800,'SpecificHeat',482.5);
- 
-
-thermalIC(B,b);
-R = solve(B,tlist);
-T = R.Temperature;
-
-
-h = figure;
-h.Position = [1 1 2 1].*h.Position;
-subplot(1,2,1); 
-axis equal
-pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
-axis equal
-title 'Temperature, Final Time, Transient Solution'
-subplot(1,2,2); 
-axis equal
-plot(tlist(1:size(T,2)), T(nid,:)); 
-grid on
-title 'Temperature at Right Edge as a Function of Time (Nonlinear)';
-xlabel 'Time, seconds'
-ylabel 'Temperature, degrees-Celsius'
+% k = @(~,state) 0.3+0.003*state.u;
+% 
+% thermalProperties(A,'ThermalConductivity',k);
+%  
+% 
+% R = solve(A);
+% T = R.Temperature;
+% figure
+% pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet');  
+% axis equal
+% title 'Temperature, Steady State Solution'
+% 
+% 
+% thermalProperties(B,'ThermalConductivity',k,'MassDensity',7800,'SpecificHeat',482.5);
+%  
+% 
+% thermalIC(B,b);
+% R = solve(B,tlist);
+% T = R.Temperature;
+% 
+% 
+% h = figure;
+% h.Position = [1 1 2 1].*h.Position;
+% subplot(1,2,1); 
+% axis equal
+% pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
+% axis equal
+% title 'Temperature, Final Time, Transient Solution'
+% subplot(1,2,2); 
+% axis equal
+% plot(tlist(1:size(T,2)), T(nid,:)); 
+% grid on
+% title 'Temperature at Right Edge as a Function of Time (Nonlinear)';
+% xlabel 'Time, seconds'
+% ylabel 'Temperature, degrees-Celsius'
 
 % --- Executes just before GUI1 is made visible.
 function GUI1_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -1083,71 +1234,3 @@ varargout{1} = handles.output;
 
 
 
-function diyigeshu_Callback(hObject, eventdata, handles)
-% hObject    handle to diyigeshu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-input = str2num(get(hObject,'String'));
-if(isempty(input))
-    set(hObject,'String',0)
-end
-guidata(hObject,handles);
-% Hints: get(hObject,'String') returns contents of diyigeshu as text
-%        str2double(get(hObject,'String')) returns contents of diyigeshu as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function diyigeshu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to diyigeshu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function diergeshu_Callback(hObject, eventdata, handles)
-% hObject    handle to diergeshu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-input = str2num(get(hObject,'String'));
-if(isempty(input))
-    set(hObject,'String',0)
-end
-guidata(hObject,handles);
-% Hints: get(hObject,'String') returns contents of diergeshu as text
-%        str2double(get(hObject,'String')) returns contents of diergeshu as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function diergeshu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to diergeshu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in pushbutton4.
-function pushbutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global a b
-x = get(handles.diyigeshu,'String');
-    y = get(handles.diergeshu,'String');
-    a = str2double(x);
-   
-    b = str2double(y);
-    c = a+b
-    d = num2str(c);
-    set(handles.jieguo,'String',d);
-    guidata(hObject.handles);
