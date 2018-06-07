@@ -57,6 +57,10 @@ switch s
      func3   
     case 4
    func4
+    case 5
+   func5 
+    case 6
+      func6
 end
 function diergeshu_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to diergeshu (see GCBO)
@@ -89,7 +93,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-str = {'cross section','beam','column','frame'};
+str = {'cross section','beam','column','frame','animation of Temp in cross section','6'};
 [sel,ok] = listdlg('ListString',str,'Name','Choose the function','PromptString','Select','SelectionMode','single');
 handles.sel_data = sel
 guidata(hObject,handles)
@@ -179,7 +183,7 @@ thermalBC(B,'Edge',1,'Temperature',a);
  
 msh = generateMesh(B,'Hmax',0.2);
  
-tlist = 0:.1:100;
+tlist = 0:.1:50;
 thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
@@ -204,6 +208,14 @@ grid on
 title 'Temperature as different Time C';
 xlabel 'seconds'
 ylabel 'Temperature C'
+% close all
+% F(length(tlist)) = struct('cdata',[],'colormap',[]);
+% for tt=1:length(tlist)
+% pdeplot(A,'XYData',T(:,tt),'Contour','on','ColorMap','jet');
+% drawnow;
+% F(tt) = getframe;
+% end
+
  
  
  
@@ -516,7 +528,7 @@ thermalBC(B,'Edge',1,'HeatFlux',-10);
 % thermalBC(B,'Edge',6,'Temperature',@transientBCHeatedBlock);
 thermalBC(B,'Edge',1,'Temperature',a);
 msh = generateMesh(B,'Hmax',0.2);
-tlist = 0:1000:200000;
+tlist = 0:1000:400000;
 thermalIC(B,b);
 R = solve(B,tlist);
 T = R.Temperature;
@@ -845,6 +857,313 @@ varargout{1} = handles.output;
 % title 'Temperature at Right Edge as a Function of Time';
 % xlabel 'Time, seconds'
 % ylabel 'Temperature, degrees-Celsius'
+
+function AppHelp(varargin)
+% Create help message
+dlgname = 'About GUI';
+txt = {'First input box is for the temperature on the heated surface.';
+       'Second input box is for the initial temperature of the object';
+       'click on UPLOAD before using this App';
+       'select the function use otherwise this App could not work';};
+helpdlg(txt,dlgname);
+
+
+% --------------------------------------------------------------------
+function AppHelp_Callback(hObject, eventdata, handles)
+% hObject    handle to AppHelp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function thermaldelta_Callback(hObject, eventdata, handles)
+% hObject    handle to thermaldelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of thermaldelta as text
+%        str2double(get(hObject,'String')) returns contents of thermaldelta as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function thermaldelta_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to thermaldelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function densitydelta_Callback(hObject, eventdata, handles)
+% hObject    handle to densitydelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of densitydelta as text
+%        str2double(get(hObject,'String')) returns contents of densitydelta as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function densitydelta_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to densitydelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function heatdelta_Callback(hObject, eventdata, handles)
+% hObject    handle to heatdelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+input = str2num(get(hObject,'String'));
+if(isempty(input))
+    set(hObject,'String',0)
+end
+guidata(hObject,handles);
+% Hints: get(hObject,'String') returns contents of heatdelta as text
+%        str2double(get(hObject,'String')) returns contents of heatdelta as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function heatdelta_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to heatdelta (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+% --------------------------------------------------------------------
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+
+function func5(handles)
+    global a b c d e
+%     x = get(handles.diyigeshu,'String');
+%     y = get(handles.diergeshu,'String');
+%     a = str2double(x);
+%    
+%     b = str2double(y);
+%     c = a+b
+%     d = num2str(c);
+% %     set(handles.jieguo,'String',d);
+%     guidata(hObject.handles);
+%  a = str2double(get(handles.diyigeshu,'String'));
+% b =str2double(get(handles.diergeshu,'String'));
+A = createpde('thermal','steadystate');
+% point1 = [3 4 -.075 .075 .075 -.075  -.1125 -.1125 .1125 .1125];
+% point2 = [3 4 -.075 -.0075 -.0075 -.075  -.0975 -.0975 .0975 .0975];
+% point3 = [3 4 .075 .0075 .0075 .075  -.0975 -.0975 .0975 .0975];
+
+ point1 = [3 4 -.075 .075 .075 -.075  -.1125 -.1125 .1125 .1125];
+ point2 = [3 4 -.075 -.0075 -.0075 -.075  -.0975 -.0975 .0975 .0975];
+ point3 = [3 4 .075 .0075 .0075 .075  -.0975 -.0975 .0975 .0975];
+
+reverse = [point1; point2;point3]';
+g = decsg(reverse,'R1-R2-R3',['R1'; 'R2';'R3']');
+geometryFromEdges(A,g);
+ 
+ 
+thermalBC(A,'Edge',2,'HeatFlux',-22.2);
+thermalBC(A,'Edge',3,'HeatFlux',-33.3);
+thermalBC(A,'Edge',4,'HeatFlux',-33.3);
+thermalBC(A,'Edge',5,'HeatFlux',-2.22);
+thermalBC(A,'Edge',6,'HeatFlux',-2.22);
+thermalBC(A,'Edge',7,'HeatFlux',-21.09);
+thermalBC(A,'Edge',8,'HeatFlux',-21.09);
+thermalBC(A,'Edge',9,'HeatFlux',-21.09);
+thermalBC(A,'Edge',10,'HeatFlux',-21.09);
+thermalBC(A,'Edge',11,'HeatFlux',-2.22);
+thermalBC(A,'Edge',12,'HeatFlux',-2.22);
+thermalBC(A,'Edge',1,'Temperature',a);
+ 
+thermalProperties(A,'ThermalConductivity',e);
+ 
+ 
+generateMesh(A,'Hmax',0.2);
+ 
+R = solve(A);
+T = R.Temperature;
+figure
+pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet');
+axis equal
+title 'Temperature, Steady State Solution'
+ 
+ 
+B = createpde('thermal','transient');
+ 
+point1 = [3 4 -.075 .075 .075 -.075  -.1125 -.1125 .1125 .1125];
+point2 = [3 4 -.075 -.0075 -.0075 -.075  -.0975 -.0975 .0975 .0975];
+point3 = [3 4 .075 .0075 .0075 .075  -.0975 -.0975 .0975 .0975];
+gdm = [point1; point2;point3]';
+g = decsg(gdm,'R1-R2-R3',['R1'; 'R2';'R3']');
+geometryFromEdges(B,g);
+ 
+ 
+thermalProperties(B,'MassDensity', c,'SpecificHeat',d, 'ThermalConductivity',e);
+                             
+                                
+  
+thermalBC(B,'Edge',2,'HeatFlux',-22.2);
+thermalBC(B,'Edge',3,'HeatFlux',-33.3);
+thermalBC(B,'Edge',4,'HeatFlux',-33.3);
+thermalBC(B,'Edge',5,'HeatFlux',-2.22);
+thermalBC(B,'Edge',6,'HeatFlux',-2.22);
+thermalBC(B,'Edge',7,'HeatFlux',-21.09);
+thermalBC(B,'Edge',8,'HeatFlux',-21.09);
+thermalBC(B,'Edge',9,'HeatFlux',-21.09);
+thermalBC(B,'Edge',10,'HeatFlux',-21.09);
+thermalBC(B,'Edge',11,'HeatFlux',-2.22);
+thermalBC(B,'Edge',12,'HeatFlux',-2.22);
+thermalBC(B,'Edge',1,'Temperature',a);
+ 
+msh = generateMesh(B,'Hmax',0.02);
+ 
+tlist = 0:.1:50;
+thermalIC(B,b);
+R = solve(B,tlist);
+T = R.Temperature;
+ 
+ 
+getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
+ 
+[~,nid] = getClosestNode( msh.Nodes, .5, 0 );
+ 
+ 
+h = figure;
+h.Position = [1 1 2 1].*h.Position;
+subplot(1,2,1);
+axis equal
+pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet');
+axis equal
+title 'transient solution'
+subplot(1,2,2);
+axis equal
+plot(tlist, T(nid,:));
+grid on
+title 'Temperature as different Time C';
+xlabel 'seconds'
+ylabel 'Temperature C'
+close all
+F(length(tlist)) = struct('cdata',[],'colormap',[]);
+for tt=1:length(tlist)
+pdeplot(A,'XYData',T(:,tt),'Contour','on','ColorMap','jet');
+drawnow;
+F(tt) = getframe;
+end
+
+function func6(handles)
+global a b c d e
+
+A = createpde('thermal','steadystate');
+rect = [2 3 0 30 15 0 0 25.98];
+tri1 = [2 3 1 9 5 1 1 7.93];
+tri2 = [2 3 11 19 15 1 1 7.93];
+tri3 = [2 3 21 29 25 1 1 7.93];
+tri4 = [2 3 6 10 14 7.66 1 7.66];
+tri5 = [2 3 16 20 24 7.66 1 7.66];
+tri6 = [2 3 5 25 15 8.66 8.66 26];
+gdm = [rect;tri1;tri2;tri3;tri4;tri5;tri6]';
+g = decsg(gdm,'rect - tri1 - tri2 - tri3 - tri4 - tri5 - tri6',['rect';'tri1' ;'tri2';'tri3';'tri4';'tri5';'tri6']');
+geometryFromEdges(A,g);
+
+
+thermalBC(A,'Edge',2,'HeatFlux',-10);
+thermalBC(A,'Edge',1,'Temperature',a);
+
+thermalProperties(A,'ThermalConductivity',c);
+
+
+generateMesh(A,'Hmax',0.2);
+
+R = solve(A);
+T = R.Temperature;
+figure
+pdeplot(A,'XYData',T,'Contour','on','ColorMap','jet'); 
+axis equal
+title 'Temperature, Steady State Solution'
+B = createpde('thermal','transient');
+
+rect = [2 3 0 30 15 0 0 25.98];
+tri1 = [2 3 1 9 5 1 1 7.93];
+tri2 = [2 3 11 19 15 1 1 7.93];
+tri3 = [2 3 21 29 25 1 1 7.93];
+tri4 = [2 3 6 10 14 7.66 1 7.66];
+tri5 = [2 3 16 20 24 7.66 1 7.66];
+tri6 = [2 3 5 25 15 8.66 8.66 26];
+gdm = [rect;tri1;tri2;tri3;tri4;tri5;tri6]';
+g = decsg(gdm,'rect - tri1 - tri2 - tri3 - tri4 - tri5 - tri6',['rect';'tri1' ;'tri2';'tri3';'tri4';'tri5';'tri6']');
+geometryFromEdges(B,g);
+
+thermalProperties(B,'ThermalConductivity',c,'MassDensity',d,'SpecificHeat',e);
+
+thermalBC(B,'Edge',1,'HeatFlux',-10);
+% thermalBC(B,'Edge',6,'Temperature',@transientBCHeatedBlock);
+thermalBC(B,'Edge',1,'Temperature',a);
+msh = generateMesh(B,'Hmax',0.2);
+tlist = 0:1000:400000;
+thermalIC(B,b);
+R = solve(B,tlist);
+T = R.Temperature;
+
+
+getClosestNode = @(p,x,y) min((p(1,:) - x).^2 + (p(2,:) - y).^2);
+
+[~,nid] = getClosestNode( msh.Nodes, .5, 0 );
+
+
+h = figure;
+h.Position = [1 1 2 1].*h.Position;
+subplot(1,2,1); 
+axis equal  
+pdeplot(B,'XYData',T(:,end),'Contour','on','ColorMap','jet'); 
+axis equal
+title 'Temperature, Final Time, Transient Solution'
+subplot(1,2,2); 
+axis equal
+plot(tlist, T(nid,:)); 
+grid on
+title 'Temperature at Right Edge as a Function of Time';
+xlabel 'Time, seconds'
+ylabel 'Temperature, degrees-Celsius'
+
+
+
+
+
+
+
+
+
 %  
 %  
 %  
@@ -1238,107 +1557,3 @@ varargout{1} = handles.output;
 % varargout{1} = handles.output;
 % 
 % 
-function AppHelp(varargin)
-% Create help message
-dlgname = 'About GUI';
-txt = {'First input box is for the temperature on the heated surface.';
-       'Second input box is for the initial temperature of the object';
-       'click on UPLOAD before using this App';
-       'select the function use otherwise this App could not work';};
-helpdlg(txt,dlgname);
-
-
-% --------------------------------------------------------------------
-function AppHelp_Callback(hObject, eventdata, handles)
-% hObject    handle to AppHelp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function thermaldelta_Callback(hObject, eventdata, handles)
-% hObject    handle to thermaldelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-input = str2num(get(hObject,'String'));
-if(isempty(input))
-    set(hObject,'String',0)
-end
-guidata(hObject,handles);
-% Hints: get(hObject,'String') returns contents of thermaldelta as text
-%        str2double(get(hObject,'String')) returns contents of thermaldelta as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function thermaldelta_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to thermaldelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function densitydelta_Callback(hObject, eventdata, handles)
-% hObject    handle to densitydelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-input = str2num(get(hObject,'String'));
-if(isempty(input))
-    set(hObject,'String',0)
-end
-guidata(hObject,handles);
-% Hints: get(hObject,'String') returns contents of densitydelta as text
-%        str2double(get(hObject,'String')) returns contents of densitydelta as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function densitydelta_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to densitydelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function heatdelta_Callback(hObject, eventdata, handles)
-% hObject    handle to heatdelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-input = str2num(get(hObject,'String'));
-if(isempty(input))
-    set(hObject,'String',0)
-end
-guidata(hObject,handles);
-% Hints: get(hObject,'String') returns contents of heatdelta as text
-%        str2double(get(hObject,'String')) returns contents of heatdelta as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function heatdelta_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to heatdelta (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --------------------------------------------------------------------
-function Untitled_1_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
